@@ -1,0 +1,12 @@
+/* Mobile-first. Reemplazar por Tailwind (@import "tailwindcss") al inicializar con create-next-app */
+:root { --fg: #111; --bg: #fff; --acento: #1d4ed8; }
+@media (prefers-color-scheme: dark) { :root { --fg: #f5f5f5; --bg: #111; --acento: #93c5fd; } }
+body { margin: 0; color: var(--fg); background: var(--bg); font: 1rem/1.5 system-ui, sans-serif; }
+main { max-width: 70ch; margin-inline: auto; padding: 1rem; }
+.skip-link { position: absolute; left: -999px; }
+.skip-link:focus { left: 1rem; top: 1rem; background: var(--bg); padding: .5rem; }
+:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+.cartas { display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; list-style: none; }
+.carta { min-width: 44px; min-height: 44px; font-size: 1.25rem; border: 2px solid var(--fg); border-radius: .5rem; background: transparent; color: inherit; cursor: pointer; }
+.carta[aria-pressed="true"] { background: var(--acento); color: var(--bg); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

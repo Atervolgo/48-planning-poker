@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: Planning Poker y Retrospectivas
+  version: 0.1.0
+servers:
+  - url: /api
+paths:
+  /auth/sesion:
+    post:
+      summary: Crear cookie de sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idToken]
+              properties: { idToken: { type: string } }
+      responses:
+        "204": { description: Sesión creada (Set-Cookie HttpOnly) }
+        "400": { $ref: "#/components/responses/Error" }
+        "401": { $ref: "#/components/responses/Error" }
+    delete:
+      summary: Cerrar sesión
+      responses:
+        "204": { description: Cookie eliminada }
+  /auth/yo:
+    get:
+      summary: Usuario actual
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Error" }
+  /salas/{id}/estado:
+    get:
+      summary: Estado de la sala (votos ocultos hasta revelar)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+  /salas/{id}/historias/{hid}/revelar:
+    post:
+      summary: Revelar votos (solo facilitador)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: hid, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Revelada }
+        "401": { $ref: "#/components/responses/Error" }
+        "403": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+components:
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: { type: string }
+              detalles:
+                type: array
+                items:
+                  type: object
+                  properties: { campo: { type: string }, mensaje: { type: string } }
