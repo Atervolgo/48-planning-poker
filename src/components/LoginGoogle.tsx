@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { authCliente } from "@/lib/firebase-client";
+import { obtenerAuth } from "@/lib/firebase-client";
 import { api } from "@/lib/api";
 
 export default function LoginGoogle() {
@@ -15,7 +15,7 @@ export default function LoginGoogle() {
     setCargando(true);
     setError(null);
     try {
-      const cred = await signInWithPopup(authCliente, new GoogleAuthProvider());
+      const cred = await signInWithPopup(obtenerAuth(), new GoogleAuthProvider());
       const idToken = await cred.user.getIdToken();
       await api("/api/auth/sesion", { method: "POST", body: JSON.stringify({ idToken }) }); // idToken → cookie HttpOnly
       router.push("/salas");
