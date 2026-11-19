@@ -1,4 +1,6 @@
 import LoginGoogle from "@/components/LoginGoogle";
+import LoginDemo from "@/components/LoginDemo";
+import { modoDemoActivo } from "@/lib/demo";
 
 export default function Login() {
   return (
@@ -6,6 +8,7 @@ export default function Login() {
       <h1>Iniciar sesión</h1>
       <p>Entra para crear o unirte a una sala.</p>
       <LoginGoogle />
+      {modoDemoActivo() && <LoginDemo />}
     </>
   );
 }

@@ -108,7 +108,7 @@ export default function PokerSala({ salaId }: { salaId: string }) {
           <ul>
             {estado.votos.map((v, i) => (
               <li key={v.uid}>
-                {v.uid === estado.yo ? "Tú" : `Persona ${i + 1}`}:{" "}
+                {v.uid === estado.yo ? "Tú" : v.uid.startsWith("demo:") ? v.uid.slice(5) : `Persona ${i + 1}`}:{" "}
                 {h.estado === "revelada" ? (v.valor ?? "sin voto") : v.voto ? "ya votó ✓" : "pendiente"}
               </li>
             ))}

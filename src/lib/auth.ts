@@ -1,5 +1,6 @@
 import { adminAuth } from "./firebase-admin";
 import { noAutenticado } from "./errores";
+import { modoDemoActivo } from "./demo";
 
 export interface Usuario {
   uid: string;
@@ -14,6 +15,14 @@ export interface Usuario {
 export async function requerirUsuario(req: Request): Promise<Usuario> {
   const cookie = req.headers.get("cookie")?.match(/(?:^|;\s*)sesion=([^;]+)/)?.[1];
   const bearer = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+
+  // Modo demo (solo desarrollo): cookie "demo.<nombre>" sin Firebase
+  if (modoDemoActivo() && cookie?.startsWith("demo.")) {
+    const slug = cookie.slice(5);
+    if (/^[a-z0-9-]{1,20}$/.test(slug)) return { uid: `demo:${slug}`, correo: null, rol: "usuario" };
+    throw noAutenticado();
+  }
+
   try {
     const decoded = cookie
       ? await adminAuth.verifySessionCookie(cookie, true)
