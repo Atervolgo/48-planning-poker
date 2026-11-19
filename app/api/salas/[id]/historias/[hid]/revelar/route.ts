@@ -1,24 +1,23 @@
 import { manejar, json } from "@/lib/http";
-import { requerirUsuario } from "@/lib/auth";
-import { noEncontrado, prohibido, conflicto } from "@/lib/errores";
-import { obtenerSala, obtenerHistoria, marcarRevelada } from "@/repositories/salas.repo";
+import { requerirFacilitador } from "@/lib/acceso";
+import { noEncontrado, conflicto } from "@/lib/errores";
+import { obtenerHistoria, listarVotos, marcarRevelada } from "@/repositories/salas.repo";
+import { mediana, hayConsenso } from "@/services/estadisticas";
 
 export const runtime = "nodejs";
 
-// POST /api/salas/:id/historias/:hid/revelar  (RF-05: solo el facilitador)
+// POST /api/salas/:id/historias/:hid/revelar  (RF-05: solo el facilitador → 403)
 export const POST = manejar(async (req, { params }) => {
   const { id, hid } = await params;
-  const usuario = await requerirUsuario(req);
-  const sala = await obtenerSala(id);
-  if (!sala || !sala.miembros.includes(usuario.uid)) throw noEncontrado("Sala no encontrada");
-
-  // Criterio de aceptación 2: no facilitador → 403
-  if (sala.facilitadorUid !== usuario.uid) throw prohibido("Solo el facilitador puede revelar");
+  await requerirFacilitador(req, id);
 
   const historia = await obtenerHistoria(id, hid);
   if (!historia) throw noEncontrado("Historia no encontrada");
   if (historia.estado === "revelada") throw conflicto("La historia ya fue revelada");
 
-  await marcarRevelada(id, hid);
-  return json({ estado: "revelada" });
+  // Resultado propuesto: el valor común si hay consenso; si no, la mediana
+  const valores = (await listarVotos(id, hid)).map((v) => v.valor);
+  const resultado = hayConsenso(valores) ? valores[0] : mediana(valores);
+  await marcarRevelada(id, hid, resultado);
+  return json({ estado: "revelada", resultado });
 });
