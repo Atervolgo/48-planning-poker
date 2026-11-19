@@ -1,0 +1,23 @@
+meta {
+  name: Crear sala - 201
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/salas
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{idToken}}
+}
+
+body:json {
+  { "nombre": "Sprint 12" }
+}
+
+assert {
+  res.status: eq 201
+}

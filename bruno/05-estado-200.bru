@@ -1,0 +1,19 @@
+meta {
+  name: Estado de sala - 200
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/salas/{{salaId}}/estado
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{idToken}}
+}
+
+assert {
+  res.status: eq 200
+}

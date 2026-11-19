@@ -3,6 +3,7 @@
 | Carpeta / archivo | Qué es | Por qué está separado |
 |---|---|---|
 | `app/` | Páginas y rutas de Next.js (App Router) | El nombre de la carpeta define la URL |
+| `app/demo`, `app/login` | Demo pública del Hito 1 y pantalla de acceso | Rutas sin sesión; `proxy.ts` no las toca |
 | `app/api/` | La API REST (Route Handlers) | Backend y frontend viven en el mismo proyecto |
 | `app/salas/[id]/poker` | Pantalla de estimación | `[id]` es un parámetro dinámico |
 | `app/unirse/[codigo]` | Unirse con código de invitación | Ruta pública de entrada |

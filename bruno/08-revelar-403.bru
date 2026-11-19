@@ -1,0 +1,19 @@
+meta {
+  name: Revelar - 403 no facilitador
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/salas/{{salaId}}/historias/{{hid}}/revelar
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{idToken}}
+}
+
+assert {
+  res.status: eq 403
+}

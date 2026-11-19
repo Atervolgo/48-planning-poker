@@ -1,0 +1,23 @@
+meta {
+  name: Votar - 400 valor invalido
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/api/salas/{{salaId}}/historias/{{hid}}/votar
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{idToken}}
+}
+
+body:json {
+  { "valor": 999 }
+}
+
+assert {
+  res.status: eq 400
+}

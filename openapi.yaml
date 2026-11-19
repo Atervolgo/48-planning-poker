@@ -1,23 +1,23 @@
 openapi: 3.0.3
 info:
   title: Planning Poker y Retrospectivas
-  version: 0.1.0
+  version: 0.2.0
 servers:
   - url: /api
+security:
+  - cookieSesion: []
 paths:
   /auth/sesion:
     post:
-      summary: Crear cookie de sesión
+      summary: Cambiar idToken de Firebase por cookie de sesión HttpOnly
+      security: []
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              type: object
-              required: [idToken]
-              properties: { idToken: { type: string } }
+            schema: { type: object, required: [idToken], properties: { idToken: { type: string } } }
       responses:
-        "204": { description: Sesión creada (Set-Cookie HttpOnly) }
+        "204": { description: Sesión creada (Set-Cookie) }
         "400": { $ref: "#/components/responses/Error" }
         "401": { $ref: "#/components/responses/Error" }
     delete:
@@ -30,40 +30,140 @@ paths:
       responses:
         "200": { description: OK }
         "401": { $ref: "#/components/responses/Error" }
+  /salas:
+    get:
+      summary: Mis salas
+      responses:
+        "200": { description: Lista de salas }
+        "401": { $ref: "#/components/responses/Error" }
+    post:
+      summary: Crear sala (quien la crea es el facilitador)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [nombre], properties: { nombre: { type: string, minLength: 3, maxLength: 60 } } }
+      responses:
+        "201": { description: Sala creada con su código de invitación }
+        "400": { $ref: "#/components/responses/Error" }
+        "401": { $ref: "#/components/responses/Error" }
+  /salas/unirse:
+    post:
+      summary: Unirse con código de invitación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [codigo], properties: { codigo: { type: string, minLength: 6, maxLength: 6 } } }
+      responses:
+        "200": { description: Unido }
+        "400": { $ref: "#/components/responses/Error" }
+        "401": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { description: Sala llena, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
   /salas/{id}/estado:
     get:
       summary: Estado de la sala (votos ocultos hasta revelar)
-      parameters:
-        - { name: id, in: path, required: true, schema: { type: string } }
+      parameters: [{ $ref: "#/components/parameters/id" }]
       responses:
         "200": { description: OK }
         "401": { $ref: "#/components/responses/Error" }
         "404": { $ref: "#/components/responses/Error" }
+  /salas/{id}/historias:
+    post:
+      summary: Abrir historia a estimar (solo facilitador)
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [titulo], properties: { titulo: { type: string, minLength: 3, maxLength: 120 } } }
+      responses:
+        "201": { description: Creada }
+        "400": { $ref: "#/components/responses/Error" }
+        "403": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+  /salas/{id}/historias/{hid}/votar:
+    put:
+      summary: Votar o cambiar el voto (mientras no se revele)
+      parameters: [{ $ref: "#/components/parameters/id" }, { $ref: "#/components/parameters/hid" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [valor]
+              properties: { valor: { oneOf: [{ type: integer, minimum: 0, maximum: 100 }, { type: string, enum: ["?", "☕"] }] } }
+      responses:
+        "200": { description: Voto guardado }
+        "400": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
   /salas/{id}/historias/{hid}/revelar:
     post:
       summary: Revelar votos (solo facilitador)
-      parameters:
-        - { name: id, in: path, required: true, schema: { type: string } }
-        - { name: hid, in: path, required: true, schema: { type: string } }
+      parameters: [{ $ref: "#/components/parameters/id" }, { $ref: "#/components/parameters/hid" }]
       responses:
-        "200": { description: Revelada }
+        "200": { description: Revelada, con resultado propuesto }
         "401": { $ref: "#/components/responses/Error" }
         "403": { $ref: "#/components/responses/Error" }
         "404": { $ref: "#/components/responses/Error" }
         "409": { $ref: "#/components/responses/Error" }
+  /salas/{id}/retro:
+    get:
+      summary: Tarjetas agrupadas por columna
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "200": { description: "{ bien: [], mejorar: [], acciones: [] }" }
+        "404": { $ref: "#/components/responses/Error" }
+    post:
+      summary: Agregar tarjeta
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [columna, texto]
+              properties: { columna: { type: string, enum: [bien, mejorar, acciones] }, texto: { type: string, minLength: 1, maxLength: 280 } }
+      responses:
+        "201": { description: Creada }
+        "400": { $ref: "#/components/responses/Error" }
+  /salas/{id}/retro/{tid}/votar:
+    post:
+      summary: Votar una tarjeta (un voto por persona)
+      parameters:
+        - { $ref: "#/components/parameters/id" }
+        - { name: tid, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Voto registrado }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+  /salas/{id}/exportar:
+    get:
+      summary: Exportar acuerdos y acciones (Markdown)
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "200": { description: Archivo .md, content: { text/markdown: { schema: { type: string } } } }
+        "404": { $ref: "#/components/responses/Error" }
 components:
+  securitySchemes:
+    cookieSesion: { type: apiKey, in: cookie, name: sesion }
+  parameters:
+    id: { name: id, in: path, required: true, schema: { type: string } }
+    hid: { name: hid, in: path, required: true, schema: { type: string } }
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+        detalles:
+          type: array
+          items: { type: object, properties: { campo: { type: string }, mensaje: { type: string } } }
   responses:
     Error:
       description: Error
-      content:
-        application/json:
-          schema:
-            type: object
-            required: [error]
-            properties:
-              error: { type: string }
-              detalles:
-                type: array
-                items:
-                  type: object
-                  properties: { campo: { type: string }, mensaje: { type: string } }
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }

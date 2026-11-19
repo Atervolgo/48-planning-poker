@@ -1,0 +1,23 @@
+meta {
+  name: Crear sala - 400 nombre corto
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/salas
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{idToken}}
+}
+
+body:json {
+  { "nombre": "a" }
+}
+
+assert {
+  res.status: eq 400
+}

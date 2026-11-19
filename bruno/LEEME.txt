@@ -1,1 +1,0 @@
-Colección Bruno: crear aquí sesión, 200, 400, 401 y 403/404 por ruta principal.
