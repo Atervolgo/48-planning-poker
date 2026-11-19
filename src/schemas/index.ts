@@ -25,3 +25,7 @@ export const tarjetaRetroSchema = z
 
 export type Voto = z.infer<typeof votoSchema>;
 export const MAX_PERSONAS_POR_SALA = 15;
+
+export const unirseSchema = z
+  .object({ codigo: z.string().trim().length(6).transform((s) => s.toUpperCase()) })
+  .strict();
