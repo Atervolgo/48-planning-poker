@@ -2,19 +2,13 @@ import { FieldValue } from "firebase-admin/firestore";
 import { db } from "@/lib/firebase-admin";
 import type { VotoGuardado } from "@/services/votos";
 import type { Tarjeta, Columna, HistoriaResumen } from "@/services/retro";
+import type { Sala } from "./tipos";
+
+export type { Sala };
 
 // ÚNICO lugar que toca Firestore. Los handlers dependen de estas funciones,
 // así en las pruebas se reemplazan con vi.mock sin tocar Firebase.
 
-export interface Sala {
-  id: string;
-  nombre: string;
-  codigo: string;
-  facilitadorUid: string;
-  miembros: string[];
-  faseActual: "votando" | "revelada" | "consenso";
-  historiaActualId: string | null;
-}
 
 const salas = () => db.collection("salas");
 
