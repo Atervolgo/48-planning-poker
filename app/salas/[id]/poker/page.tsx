@@ -1,11 +1,11 @@
-import MesaCartas from "@/components/MesaCartas";
+import PokerSala from "@/components/PokerSala";
 
-// Componente de servidor (por defecto). Solo MesaCartas es "use client".
-export default function PokerPage() {
+export default async function PokerPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   return (
     <>
       <h1>Estimación con cartas</h1>
-      <MesaCartas />
+      <PokerSala salaId={id} />
     </>
   );
 }

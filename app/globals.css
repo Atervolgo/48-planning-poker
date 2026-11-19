@@ -10,3 +10,7 @@ main { max-width: 70ch; margin-inline: auto; padding: 1rem; }
 .carta { min-width: 44px; min-height: 44px; font-size: 1.25rem; border: 2px solid var(--fg); border-radius: .5rem; background: transparent; color: inherit; cursor: pointer; }
 .carta[aria-pressed="true"] { background: var(--acento); color: var(--bg); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+input, select { min-height: 44px; padding: 0 .5rem; margin: .25rem 0; }
+button { min-height: 44px; padding: 0 1rem; }
+.retro { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 768px) { .retro { grid-template-columns: repeat(3, 1fr); } }

@@ -1,4 +1,11 @@
-export default function RetroPage() {
-  // TODO Hito 2: 3 columnas (bien, mejorar, acciones) con tarjetas y votos
-  return <h1>Retrospectiva</h1>;
+import RetroBoard from "@/components/RetroBoard";
+
+export default async function RetroPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return (
+    <>
+      <h1>Retrospectiva</h1>
+      <RetroBoard salaId={id} />
+    </>
+  );
 }
