@@ -18,6 +18,7 @@ npm i -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-libra
 
 # 3. Variables de entorno
 cp .env.example .env.local     # complete los valores (NUNCA lo suba a Git)
+#    Para probar SIN Firebase, deje solo:  MODO_DEMO=1   (ver docs/DEMO.md)
 
 # 4. Correr
 npm run dev      # http://localhost:3000/demo  (Hito 1, no necesita Firebase)
@@ -38,6 +39,9 @@ npm test
 `POST/DELETE /api/auth/sesion` · `GET /api/auth/yo` · `GET/POST /api/salas` · `POST /api/salas/unirse` ·
 `GET /api/salas/:id/estado` · `POST /api/salas/:id/historias` · `PUT …/historias/:hid/votar` ·
 `POST …/historias/:hid/revelar` · `GET/POST /api/salas/:id/retro` · `POST …/retro/:tid/votar` · `GET /api/salas/:id/exportar`
+
+## Modo demo
+`MODO_DEMO=1` + `npm run dev` usa datos en memoria y entra con un nombre (`/login`). Se desactiva solo en producción. Guía de presentación: `docs/DEMO.md`.
 
 ## Estado del avance
 Ver `docs/PLAN_DE_TRABAJO.md`. Resumen: Hito 1 completo en código; Hitos 2 y 3 adelantados (sin ejecutar aún: requieren `npm install` y un proyecto Firebase).

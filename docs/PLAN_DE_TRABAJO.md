@@ -26,6 +26,11 @@ Leyenda: ✅ escrito · 🧪 escrito pero SIN ejecutar (falta `npm install` y pr
 - ☐ Pruebas de `unirse`, `retro`, `exportar`
 - ☐ Crear el proyecto de Firebase y llenar `.env.local`
 
+## Extra: modo demo
+- ✅ Repositorio en memoria verificado con Node (flujo completo: sala, miembros, votos ocultos, revelar, retro, voto único)
+- 🧪 Acceso por nombre (`/api/auth/demo`), fachada de repositorio, Firebase perezoso (el build no exige credenciales)
+- ☐ Probar el flujo de dos navegadores completo (`docs/DEMO.md`)
+
 ## Hito 4 (semana 15)
 - 🧪 Login con Google → cookie de sesión HttpOnly
 - ☐ Desplegar en Vercel con variables de entorno
@@ -36,4 +41,4 @@ Leyenda: ✅ escrito · 🧪 escrito pero SIN ejecutar (falta `npm install` y pr
 ## Pendientes conocidos del código
 - `useOptimistic` (la spec lo menciona): hoy el voto optimista usa `useState` con reversión; se puede migrar.
 - Límite de tasa (429) y comprobación de `Origin` en métodos que cambian datos: sin implementar.
-- El `uid` se muestra como "Persona N"; falta guardar nombres visibles de los miembros.
+- Con Firebase real, el `uid` se muestra como "Persona N"; falta guardar nombres visibles de los miembros (en demo sí se ve el nombre).
