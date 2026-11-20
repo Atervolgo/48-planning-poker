@@ -56,7 +56,7 @@ export async function crearHistoria(salaId: string, titulo: string): Promise<str
 }
 export async function obtenerHistoria(salaId: string, hid: string) {
   const h = salas.get(salaId)?.historias.get(hid);
-  return h ? { titulo: h.titulo, estado: h.estado } : null;
+  return h ? { titulo: h.titulo, estado: h.estado, resultado: h.resultado } : null;
 }
 export async function listarHistorias(salaId: string): Promise<HistoriaResumen[]> {
   return [...(salas.get(salaId)?.historias.values() ?? [])].map((h) => ({ titulo: h.titulo, resultado: h.resultado }));
@@ -75,6 +75,14 @@ export async function marcarRevelada(salaId: string, hid: string, resultado: num
   h.estado = "revelada";
   h.resultado = resultado;
   s.faseActual = "revelada";
+}
+
+export async function fijarConsenso(salaId: string, hid: string, resultado: number | string) {
+  const s = salas.get(salaId);
+  const h = s?.historias.get(hid);
+  if (!s || !h) return;
+  h.resultado = resultado;
+  s.faseActual = "consenso";
 }
 
 export async function listarTarjetas(salaId: string): Promise<Tarjeta[]> {

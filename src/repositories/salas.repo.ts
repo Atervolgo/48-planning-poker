@@ -21,6 +21,7 @@ export const listarHistorias: Repo["listarHistorias"] = async (...a) => (await r
 export const guardarVoto: Repo["guardarVoto"] = async (...a) => (await repo()).guardarVoto(...a);
 export const listarVotos: Repo["listarVotos"] = async (...a) => (await repo()).listarVotos(...a);
 export const marcarRevelada: Repo["marcarRevelada"] = async (...a) => (await repo()).marcarRevelada(...a);
+export const fijarConsenso: Repo["fijarConsenso"] = async (...a) => (await repo()).fijarConsenso(...a);
 export const listarTarjetas: Repo["listarTarjetas"] = async (...a) => (await repo()).listarTarjetas(...a);
 export const crearTarjeta: Repo["crearTarjeta"] = async (...a) => (await repo()).crearTarjeta(...a);
 export const votarTarjeta: Repo["votarTarjeta"] = async (...a) => (await repo()).votarTarjeta(...a);

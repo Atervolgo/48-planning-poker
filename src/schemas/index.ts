@@ -8,9 +8,12 @@ export const crearSalaSchema = z
   .object({ nombre: z.string().trim().min(3).max(60) })
   .strict();
 
-export const votoSchema = z
-  .object({ valor: z.union([z.number().int().min(0).max(100), z.enum(["?", "☕"])]) })
-  .strict();
+const valorVoto = z.union([z.number().int().min(0).max(100), z.enum(["?", "☕"])]);
+
+export const votoSchema = z.object({ valor: valorVoto }).strict();
+
+// El facilitador fija el valor acordado (puede diferir del propuesto por la mediana)
+export const consensoSchema = z.object({ resultado: valorVoto }).strict();
 
 export const crearHistoriaSchema = z
   .object({ titulo: z.string().trim().min(3).max(120) })

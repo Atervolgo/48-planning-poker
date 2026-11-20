@@ -55,7 +55,9 @@ export async function crearHistoria(salaId: string, titulo: string): Promise<str
 
 export async function obtenerHistoria(salaId: string, hid: string) {
   const snap = await db.doc(`salas/${salaId}/historias/${hid}`).get();
-  return snap.exists ? (snap.data() as { titulo: string; estado: "votando" | "revelada" }) : null;
+  return snap.exists
+    ? (snap.data() as { titulo: string; estado: "votando" | "revelada"; resultado?: number | string | null })
+    : null;
 }
 
 export async function listarHistorias(salaId: string): Promise<HistoriaResumen[]> {
@@ -76,6 +78,14 @@ export async function marcarRevelada(salaId: string, hid: string, resultado: num
   const batch = db.batch();
   batch.update(db.doc(`salas/${salaId}/historias/${hid}`), { estado: "revelada", resultado });
   batch.update(salas().doc(salaId), { faseActual: "revelada" });
+  await batch.commit();
+}
+
+/** El facilitador confirma el valor acordado → la sala pasa a la fase "consenso". */
+export async function fijarConsenso(salaId: string, hid: string, resultado: number | string) {
+  const batch = db.batch();
+  batch.update(db.doc(`salas/${salaId}/historias/${hid}`), { resultado });
+  batch.update(salas().doc(salaId), { faseActual: "consenso" });
   await batch.commit();
 }
 
