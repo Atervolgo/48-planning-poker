@@ -24,8 +24,17 @@ export const POST = manejar(async (req) => {
   return res;
 });
 
-// DELETE /api/auth/sesion → cierra sesión
-export const DELETE = manejar(async () => {
+// DELETE /api/auth/sesion → cierra sesión y revoca los refresh tokens (si es una sesión real)
+export const DELETE = manejar(async (req) => {
+  const cookie = req.headers.get("cookie")?.match(/(?:^|;\s*)sesion=([^;]+)/)?.[1];
+  if (cookie && !cookie.startsWith("demo.")) {
+    try {
+      const decoded = await adminAuth.verifySessionCookie(cookie);
+      await adminAuth.revokeRefreshTokens(decoded.uid);
+    } catch {
+      /* cookie vencida o inválida: igual se borra */
+    }
+  }
   const res = new Response(null, { status: 204 });
   res.headers.append("Set-Cookie", "sesion=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0");
   return res;
