@@ -34,3 +34,11 @@ Navegador ──fetch──▶ Route Handler ──▶ Servicio ──▶ Reposi
 4. Votos ocultos: el servidor filtra (`prepararVotosParaCliente`); no confío en que el cliente "los esconda".
 5. Solo el facilitador revela → 403 en el servidor, no solo botón deshabilitado en la interfaz.
 6. Secretos solo en variables de servidor; `NEXT_PUBLIC_*` es público.
+
+## Defensas en el envoltorio común (`src/lib/http.ts`)
+Todos los Route Handlers pasan por `manejar()`, que en métodos que escriben (POST/PUT/DELETE):
+1. comprueba `Origin` (si viene, debe ser el mismo sitio → si no, 403),
+2. aplica un límite de frecuencia por IP (120/min en general, 10/min en `/api/auth`) → 429 con `Retry-After`,
+3. traduce errores a `{ error, detalles? }` sin filtrar información interna.
+
+`next.config.ts` añade cabeceras (`Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy`).

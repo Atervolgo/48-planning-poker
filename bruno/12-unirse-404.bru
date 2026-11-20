@@ -1,0 +1,23 @@
+meta {
+  name: Unirse - 404 codigo inexistente
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/api/salas/unirse
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{idToken}}
+}
+
+body:json {
+  { "codigo": "ZZZZZZ" }
+}
+
+assert {
+  res.status: eq 404
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Consenso - 403 no facilitador
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/api/salas/{{salaId}}/historias/{{hid}}/consenso
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{idToken}}
+}
+
+body:json {
+  { "resultado": 5 }
+}
+
+assert {
+  res.status: eq 403
+}

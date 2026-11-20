@@ -33,9 +33,10 @@ Use **dos navegadores** (uno normal y uno en incógnito) para simular dos person
 5. **Criterio de seguridad (RF-03):** en B abra DevTools → Red → `estado` → Respuesta. Muestre que los valores de los demás **no viajan**.
 6. **Criterio de rol (RF-05):** en la consola de B ejecute
    `fetch("/api/salas/ID/historias/HID/revelar",{method:"POST"}).then(r=>r.status)` → **403**. (ID y HID salen de la URL y de la pestaña Red).
-7. **A:** «Revelar votos» → aparecen valores, promedio y mediana; el lector de pantalla anuncia el cambio (`aria-live`).
+7. **A:** «Revelar votos» → aparecen valores, promedio y mediana; el lector de pantalla anuncia el cambio (`aria-live`). Luego **«Fijar consenso»** con el valor acordado: aparece en el *Historial de estimaciones* y se habilita abrir la siguiente historia. Intente votar de nuevo en B: las cartas están bloqueadas (criterio 3).
 8. **Retro:** `/salas/ID/retro` → agregue tarjetas en las 3 columnas, vote, y use «Exportar» (RF-06).
-9. Muestre `/demo` (Hito 1) y `npm test`.
+9. Muestre `/demo` (Hito 1) y `npm test`. Cierre con **«Salir»**.
+10. *(Opcional, seguridad)* En DevTools → Red → cualquier respuesta: muestre `Content-Security-Policy`. En consola, `fetch('/api/salas',{method:'POST',headers:{'Content-Type':'application/json',Origin:'x'}})` no sirve (el navegador fija Origin), pero puede explicar que un sitio ajeno recibiría **403** por la comprobación de `Origin`.
 
 ## 3. Qué decir en cada criterio del tablero
 
@@ -58,6 +59,9 @@ Respuesta: porque los handlers dependen de una **fachada** (`salas.repo.ts`); ca
 | Lint: «setState in effect» | Regla nueva de react-hooks | Es advertencia de estilo; no impide `npm run dev` ni `build` |
 | `/salas` redirige siempre a `/login` | Falta la cookie | Entre por `/login`; en demo la cookie se llama `sesion` |
 | 404 en `/api/auth/demo` | `MODO_DEMO` no está o no reinició | Crear `.env.local` y **reiniciar** `npm run dev` |
+| Las pruebas de componente dejan DOM de la anterior | Falta `tests/setup.ts` (limpieza) | Verificar `setupFiles` en `vitest.config.ts` |
+| Pantalla en blanco / bloqueo de scripts en dev | CSP muy estricta | Revisar `next.config.ts` (en dev permite `unsafe-eval`) |
+| `429` durante la demo | Más de 120 escrituras por minuto desde la misma IP | Esperar un minuto, o subir el límite en `src/lib/http.ts` |
 | Se pierden las salas | Memoria se borra al reiniciar el servidor | Normal en modo demo; cree la sala de nuevo |
 | Error de tipos en `route.ts` | Firma de handler | Mostrar el mensaje exacto y se corrige |
 | `useReducer`/hook en componente de servidor | Falta `"use client"` | Primera línea del archivo |

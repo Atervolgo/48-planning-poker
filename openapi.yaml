@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Planning Poker y Retrospectivas
-  version: 0.2.0
+  version: 0.3.0
 servers:
   - url: /api
 security:
@@ -63,7 +63,7 @@ paths:
         "409": { description: Sala llena, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
   /salas/{id}/estado:
     get:
-      summary: Estado de la sala (votos ocultos hasta revelar)
+      summary: Estado de la sala (votos ajenos ocultos hasta revelar; incluye miVoto, historial y resumen)
       parameters: [{ $ref: "#/components/parameters/id" }]
       responses:
         "200": { description: OK }
@@ -107,6 +107,24 @@ paths:
       responses:
         "200": { description: Revelada, con resultado propuesto }
         "401": { $ref: "#/components/responses/Error" }
+        "403": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+  /salas/{id}/historias/{hid}/consenso:
+    post:
+      summary: Fijar el valor acordado (solo facilitador, tras revelar)
+      parameters: [{ $ref: "#/components/parameters/id" }, { $ref: "#/components/parameters/hid" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resultado]
+              properties: { resultado: { oneOf: [{ type: integer, minimum: 0, maximum: 100 }, { type: string, enum: ["?", "☕"] }] } }
+      responses:
+        "200": { description: Consenso fijado; la sala pasa a la fase consenso }
+        "400": { $ref: "#/components/responses/Error" }
         "403": { $ref: "#/components/responses/Error" }
         "404": { $ref: "#/components/responses/Error" }
         "409": { $ref: "#/components/responses/Error" }
@@ -165,5 +183,5 @@ components:
           items: { type: object, properties: { campo: { type: string }, mensaje: { type: string } } }
   responses:
     Error:
-      description: Error
+      description: Error (400 datos inválidos, 401 sin sesión, 403 sin permiso u Origin no permitido, 404, 409 conflicto, 429 demasiadas peticiones con cabecera Retry-After)
       content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }

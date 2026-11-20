@@ -38,10 +38,15 @@ npm test
 ## API (ver `openapi.yaml`)
 `POST/DELETE /api/auth/sesion` · `GET /api/auth/yo` · `GET/POST /api/salas` · `POST /api/salas/unirse` ·
 `GET /api/salas/:id/estado` · `POST /api/salas/:id/historias` · `PUT …/historias/:hid/votar` ·
-`POST …/historias/:hid/revelar` · `GET/POST /api/salas/:id/retro` · `POST …/retro/:tid/votar` · `GET /api/salas/:id/exportar`
+`POST …/historias/:hid/revelar` · `POST …/historias/:hid/consenso` · `GET/POST /api/salas/:id/retro` · `POST …/retro/:tid/votar` · `GET /api/salas/:id/exportar`
+
+## Seguridad implementada
+Reglas de Firestore `if false` · cookie `HttpOnly/Secure/SameSite=Lax` · sesión verificada en cada ruta · autorización por objeto (404/403) ·
+Zod `.strict()` · votos ajenos ocultos en el servidor · **comprobación de `Origin`** y **límite 429** en todos los métodos que escriben (`src/lib/http.ts`) ·
+cabeceras de seguridad y CSP (`next.config.ts`) · cierre de sesión que revoca tokens · `npm audit` pendiente.
 
 ## Modo demo
 `MODO_DEMO=1` + `npm run dev` usa datos en memoria y entra con un nombre (`/login`). Se desactiva solo en producción. Guía de presentación: `docs/DEMO.md`.
 
 ## Estado del avance
-Ver `docs/PLAN_DE_TRABAJO.md`. Resumen: Hito 1 completo en código; Hitos 2 y 3 adelantados (sin ejecutar aún: requieren `npm install` y un proyecto Firebase).
+Ver `docs/PLAN_DE_TRABAJO.md`. Resumen: Hito 1 completo en código; Hitos 2 y 3 adelantados; seguridad de la sección 9.5 implementada. Todo está **sin ejecutar** aún: requiere `npm install` y, para el login real, un proyecto Firebase.
