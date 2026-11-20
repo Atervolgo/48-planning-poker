@@ -1,10 +1,12 @@
 # Pruebas (sección 11)
 
-| Carpeta | Qué prueba | Estado |
-|---|---|---|
-| `services/` | Reglas puras: estadísticas, votos ocultos, retro, código | ✅ escritas |
-| `api/` | Route Handlers con sesión y repositorio simulados (401, 400, 403, 404, 409, votos ocultos) | ✅ escritas |
-| `components/` | MesaCartas por rol y etiqueta (carga, vacío, error, aria-pressed, revelar) | ✅ escritas |
+| Carpeta | Qué prueba |
+|---|---|
+| `services/` | Reglas puras: estadísticas, votos ocultos, retro, código, repositorio en memoria |
+| `api/` | Route Handlers con sesión y repositorio simulados: 401, 400, 403, 404, 409, 429, Origin, votos ocultos, consenso, exportar |
+| `api/integracion.test.ts` | **Integración:** ruta → servicio → repositorio (en memoria) en un flujo completo y con los 3 criterios de aceptación |
+| `components/` | `MesaCartas`, `RetroBoard`, `Salas` por rol y etiqueta (no por clases CSS) |
 
-Pendiente: pruebas de `unirse` (sala llena → 409), `retro` y de `RetroBoard`/`Salas`; prueba de integración ruta → servicio → repositorio simulado.
 Ejecutar: `npm test`
+
+Estado: escritas, **sin ejecutar todavía** (falta `npm install`). Si alguna falla, el mensaje dirá cuál; corregir la prueba o el código según cuál esté mal.

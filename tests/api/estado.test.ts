@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/auth", () => ({ requerirUsuario: vi.fn() }));
 vi.mock("@/repositories/salas.repo", () => ({
-  obtenerSala: vi.fn(), obtenerHistoria: vi.fn(), listarVotos: vi.fn(),
+  obtenerSala: vi.fn(), obtenerHistoria: vi.fn(), listarVotos: vi.fn(), listarHistorias: vi.fn(),
 }));
 
 import { requerirUsuario } from "@/lib/auth";
@@ -18,6 +18,7 @@ beforeEach(() => {
     id: "s1", facilitadorUid: "fac", miembros: ["fac", "ana"], faseActual: "votando", historiaActualId: "h1",
   } as never);
   vi.mocked(repo.listarVotos).mockResolvedValue([{ uid: "fac", valor: 13 }, { uid: "ana", valor: 3 }]);
+  vi.mocked(repo.listarHistorias).mockResolvedValue([{ titulo: "Anterior", resultado: 8 }, { titulo: "Sin cerrar", resultado: null }]);
 });
 
 describe("GET estado · votos ocultos (RF-03)", () => {
@@ -35,6 +36,12 @@ describe("GET estado · votos ocultos (RF-03)", () => {
     const body = await (await llamar()).json();
     expect(body.votos.find((v: { uid: string }) => v.uid === "fac").valor).toBe(13);
     expect(body.resumen.mediana).toBe(8);
+  });
+  it("devuelve mi propio voto y el historial de historias cerradas", async () => {
+    vi.mocked(repo.obtenerHistoria).mockResolvedValue({ titulo: "H", estado: "votando" });
+    const body = await (await llamar()).json();
+    expect(body.miVoto).toBe(3); // el voto de Ana es suyo y puede verlo
+    expect(body.historial).toEqual([{ titulo: "Anterior", resultado: 8 }]);
   });
   it("indica si quien consulta es el facilitador", async () => {
     vi.mocked(repo.obtenerHistoria).mockResolvedValue({ titulo: "H", estado: "votando" });
