@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { crearSalaSchema } from "@/schemas";
+import Esqueleto from "./Esqueleto";
 
 interface SalaResumen { id: string; nombre: string; codigo: string; esFacilitador: boolean; miembros: number }
 
@@ -40,7 +41,7 @@ export default function Salas() {
       {error ? (
         <div role="alert"><p>No se pudieron cargar tus salas.</p><button type="button" onClick={cargar}>Reintentar</button></div>
       ) : salas === null ? (
-        <p role="status">Cargando salas…</p>
+        <Esqueleto etiqueta="Cargando salas…" />
       ) : salas.length === 0 ? (
         <p>Aún no tienes salas. Crea una o únete con un código.</p>
       ) : (

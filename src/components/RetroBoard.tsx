@@ -5,6 +5,7 @@ import { tarjetaRetroSchema } from "@/schemas";
 import { COLUMNAS, type Columna, type Tarjeta } from "@/services/retro";
 import { usePolling } from "@/hooks/usePolling";
 import { api, ApiError } from "@/lib/api";
+import Esqueleto from "./Esqueleto";
 
 type Grupos = Record<Columna, Tarjeta[]>;
 
@@ -35,11 +36,13 @@ export default function RetroBoard({ salaId }: { salaId: string }) {
     catch (e) { setError(e instanceof ApiError && e.status === 409 ? "Ya votaste esta tarjeta." : "No se pudo votar."); }
   }
 
-  if (!grupos) return error ? <p role="alert">{error}</p> : <p role="status">Cargando tablero…</p>;
+  if (!grupos) return error ? <p role="alert">{error}</p> : <Esqueleto etiqueta="Cargando tablero…" />;
 
   return (
     <>
       <form onSubmit={agregar} noValidate>
+        <fieldset>
+        <legend>Nueva tarjeta</legend>
         <label htmlFor="columna">Columna</label>
         <select id="columna" value={columna} onChange={(e) => setColumna(e.target.value as Columna)}>
           {COLUMNAS.map((c) => <option key={c.id} value={c.id}>{c.titulo}</option>)}
@@ -47,7 +50,9 @@ export default function RetroBoard({ salaId }: { salaId: string }) {
         <label htmlFor="texto">Tarjeta</label>
         <input id="texto" value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={280} />
         <button type="submit">Agregar</button>
+        </fieldset>
       </form>
+      <button type="button" onClick={cargar}>Actualizar</button>
       {error && <p role="alert">{error}</p>}
       <p aria-live="polite">{aviso}</p>
 

@@ -3,14 +3,21 @@
 import { useReducer, useEffect, useState } from "react";
 import { VALORES_CARTA } from "@/schemas";
 import { promedio, mediana, dispersion } from "@/services/estadisticas";
+import Esqueleto from "./Esqueleto";
 
-// useReducer para las fases (sección 6): votando → revelada
-type Estado = { fase: "votando" | "revelada"; miVoto: number | string | null };
-type Accion = { tipo: "votar"; valor: number | string } | { tipo: "revelar" };
+// useReducer para las fases de la sesión (sección 6): votando → revelada → consenso
+type Estado = { fase: "votando" | "revelada" | "consenso"; miVoto: number | string | null };
+type Accion = { tipo: "votar"; valor: number | string } | { tipo: "revelar" } | { tipo: "consenso" };
 
-function reducer(e: Estado, a: Accion): Estado {
-  if (a.tipo === "votar") return e.fase === "revelada" ? e : { ...e, miVoto: a.valor }; // no se vota tras revelar
-  return { ...e, fase: "revelada" };
+export function reducer(e: Estado, a: Accion): Estado {
+  switch (a.tipo) {
+    case "votar":
+      return e.fase === "votando" ? { ...e, miVoto: a.valor } : e; // no se vota tras revelar
+    case "revelar":
+      return e.fase === "votando" ? { ...e, fase: "revelada" } : e;
+    case "consenso":
+      return e.fase === "revelada" ? { ...e, fase: "consenso" } : e;
+  }
 }
 
 type Carga =
@@ -46,7 +53,7 @@ export default function MesaCartas() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  if (carga.estado === "cargando") return <p role="status">Cargando mesa…</p>;
+  if (carga.estado === "cargando") return <Esqueleto etiqueta="Cargando mesa…" />;
   if (carga.estado === "error")
     return (
       <div role="alert">
@@ -61,32 +68,38 @@ export default function MesaCartas() {
   return (
     <section aria-labelledby="titulo-mesa">
       <h2 id="titulo-mesa">{carga.historia}</h2>
-      <p>Elige tu carta (también puedes usar las teclas 1 a 9).</p>
-      <ul className="cartas">
-        {VALORES_CARTA.map((v) => (
-          <li key={String(v)}>
-            <button
-              type="button"
-              className="carta"
-              aria-pressed={juego.miVoto === v}
-              disabled={juego.fase === "revelada"}
-              onClick={() => dispatch({ tipo: "votar", valor: v })}
-            >
-              {v}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <fieldset>
+        <legend>Elige tu carta (también puedes usar las teclas 1 a 9)</legend>
+        <ul className="cartas">
+          {VALORES_CARTA.map((v) => (
+            <li key={String(v)}>
+              <button
+                type="button"
+                className="carta"
+                aria-pressed={juego.miVoto === v}
+                disabled={juego.fase !== "votando"}
+                onClick={() => dispatch({ tipo: "votar", valor: v })}
+              >
+                {v}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </fieldset>
 
-      <button type="button" onClick={() => dispatch({ tipo: "revelar" })} disabled={juego.fase === "revelada"}>
-        Revelar (simulado)
-      </button>
+      {juego.fase === "votando" && (
+        <button type="button" onClick={() => dispatch({ tipo: "revelar" })}>Revelar (simulado)</button>
+      )}
+      {juego.fase === "revelada" && (
+        <button type="button" onClick={() => dispatch({ tipo: "consenso" })}>Fijar consenso (simulado)</button>
+      )}
 
       {/* aria-live: el lector de pantalla anuncia el cambio de fase */}
       <p aria-live="polite">
-        {juego.fase === "votando"
-          ? "Fase: votando. Los votos están ocultos."
-          : `Fase: revelada. Promedio ${promedio(todos)?.toFixed(1)}, mediana ${mediana(todos)}, dispersión ${dispersion(todos)?.toFixed(2)}.`}
+        {juego.fase === "votando" && "Fase: votando. Los votos están ocultos."}
+        {juego.fase === "revelada" &&
+          `Fase: revelada. Promedio ${promedio(todos)?.toFixed(1)}, mediana ${mediana(todos)}, dispersión ${dispersion(todos)?.toFixed(2)}.`}
+        {juego.fase === "consenso" && `Fase: consenso. Resultado acordado: ${mediana(todos)}.`}
       </p>
     </section>
   );

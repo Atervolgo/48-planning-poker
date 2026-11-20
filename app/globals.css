@@ -14,3 +14,8 @@ input, select { min-height: 44px; padding: 0 .5rem; margin: .25rem 0; }
 button { min-height: 44px; padding: 0 1rem; }
 .retro { display: grid; gap: 1rem; grid-template-columns: 1fr; }
 @media (min-width: 768px) { .retro { grid-template-columns: repeat(3, 1fr); } }
+header, footer { max-width: 70ch; margin-inline: auto; padding: .5rem 1rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.esqueleto { height: 1.5rem; margin: .5rem 0; border-radius: .25rem; background: color-mix(in srgb, var(--fg) 15%, transparent); animation: pulso 1.2s ease-in-out infinite; }
+@keyframes pulso { 50% { opacity: .4; } }
+fieldset { border: 1px solid color-mix(in srgb, var(--fg) 40%, transparent); border-radius: .5rem; margin: 1rem 0; }

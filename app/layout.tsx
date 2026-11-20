@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import BotonSalir from "@/components/BotonSalir";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#contenido" className="skip-link">Saltar al contenido</a>
         <header>
           <nav aria-label="Principal">
-            <a href="/salas">Mis salas</a>
+            <a href="/salas">Mis salas</a> <BotonSalir />
           </nav>
         </header>
         <main id="contenido">{children}</main>

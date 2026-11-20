@@ -17,7 +17,7 @@ export function usePolling(fn: () => void | Promise<void>, ms = 3000) {
       if (timer) clearInterval(timer);
       timer = null;
     };
-    const onVisibilidad = () => (document.visibilityState === "visible" ? iniciar() : detener());
+    const onVisibilidad = () => (document.visibilityState !== "hidden" ? iniciar() : detener());
 
     onVisibilidad();
     document.addEventListener("visibilitychange", onVisibilidad);
